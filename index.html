@@ -265,9 +265,120 @@ html.dark #close-modal:hover { color: var(--dark-hover); }
 
 
 
+/* === MOBILE / RESPONSIVE TWEAKS === */
+
+/* Reduce some heavy transforms and sizes on medium and small screens */
+@media (max-width: 1024px) {
+  /* Reduce card min height and padding on tablets/large phones */
+  .card {
+    min-height: 380px;
+    padding: 1.25rem;
+  }
+
+  /* Scale hero text down a bit */
+  #home h1 {
+    font-size: 2.25rem;
+    line-height: 1.15;
+  }
+
+  /* Expertise grid -> single column for smaller screens */
+  #expertise .grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* About layout -> stack vertically */
+  #about .flex {
+    flex-direction: column;
+  }
+
+  /* Smaller profile image */
+  #about img {
+    width: 10rem;
+    height: 10rem;
+    margin-bottom: 1rem;
+  }
+
+  /* Smaller headings/body for better visual fit */
+  h2 { font-size: 1.6rem; }
+  p  { font-size: 1rem; }
+}
+
+/* Aggressive mobile adjustments */
+@media (max-width: 640px) {
+  .card { min-height: auto; padding: 1rem; }
+  #home h1 { font-size: 1.6rem; margin-bottom: 0.75rem; }
+  #home p { font-size: 0.95rem; max-width: 95%; }
+  .btn-glow { padding: 0.6rem 1rem; font-size: 0.95rem; }
+  .social-icon i { width: 20px; height: 20px; }
+  .max-w-6xl { padding-left: 1rem; padding-right: 1rem; }
+}
+
+/* === Mobile overlay menu styles === */
+.mobile-menu-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 60;
+  display: none;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+.mobile-menu-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+}
+.mobile-menu-panel {
+  position: relative;
+  width: 100%;
+  max-width: 480px;
+  background: rgba(255,255,255,0.96);
+  margin-top: 64px; /* space below nav */
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+  padding: 1rem 1rem 2rem 1rem;
+  box-shadow: 0 20px 50px rgba(2,6,23,0.35);
+  transform: translateY(-6px);
+  animation: slideDown 220ms cubic-bezier(.2,.9,.3,1) forwards;
+}
+html.dark .mobile-menu-panel {
+  background: rgba(13,17,23,0.98);
+}
+
+/* menu links inside panel */
+.mobile-menu-panel a {
+  display: block;
+  padding: 12px 16px;
+  border-radius: 8px;
+  text-decoration: none;
+  color: var(--light-text);
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+html.dark .mobile-menu-panel a { color: var(--dark-text); }
+.mobile-menu-panel a:hover { background: rgba(88,166,255,0.06); }
+
+/* slide animation */
+@keyframes slideDown {
+  from { transform: translateY(-10px); opacity: 0; }
+  to   { transform: translateY(0); opacity: 1; }
+}
+
+/* small screens adjust panel radius */
+@media (max-width: 420px) {
+  .mobile-menu-panel { border-bottom-left-radius: 6px; border-bottom-right-radius: 6px; padding-left: 0.75rem; padding-right: 0.75rem; }
+}
+
+/* Ensure no horizontal overflow on small screens */
+@media (max-width: 480px) {
+  html, body { overflow-x: hidden; }
+}
 </style>
 </head>
-   </head>
    <body class="theme-transition min-h-screen bg-[var(--light-bg)] text-[var(--light-text)] dark:bg-[var(--dark-bg)] dark:text-[var(--dark-text)]">
       <!-- Vanta.js Background -->
       <div id="vanta-bg" class="fixed inset-0 -z-10"></div>
@@ -299,6 +410,31 @@ html.dark #close-modal:hover { color: var(--dark-hover); }
         <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
       </svg>
     </button>
+  </div>
+
+  <!-- Mobile overlay menu markup (hidden by default, shown via JS) -->
+  <div id="mobileOverlay" class="mobile-menu-overlay" aria-hidden="true">
+    <div class="mobile-menu-backdrop" id="mobileBackdrop"></div>
+    <div class="mobile-menu-panel" role="dialog" aria-modal="true" aria-label="Mobile menu">
+      <div class="flex items-center justify-between px-2 py-1">
+        <a href="#home" class="text-xl font-bold nav-link dark:text-[var(--dark-text)] text-[var(--light-text)]">Hamzah Mahomed</a>
+        <button id="mobileClose" class="p-2 rounded focus:outline-none" aria-label="Close menu" type="button">
+          <svg class="w-6 h-6 text-[var(--light-text)] dark:text-[var(--dark-text)]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+
+      <nav class="mt-4 px-2">
+        <a href="#home" class="block py-3 px-2">Home</a>
+        <a href="#expertise" class="block py-3 px-2">Expertise</a>
+        <a href="#about" class="block py-3 px-2">About</a>
+        <a href="#contact" class="block py-3 px-2">Contact</a>
+        <div class="mt-4 border-t pt-4">
+          <!-- Optional theme toggle placeholder (keeps structure for existing theme toggles if present) -->
+        </div>
+      </nav>
+    </div>
   </div>
 </nav>
 
@@ -343,6 +479,8 @@ html.dark #close-modal:hover { color: var(--dark-hover); }
     <span class="text-sm text-gray-400 mt-2">Scroll</span>
   </button>
 </section>
+
+
 
 
 
@@ -406,7 +544,7 @@ html.dark #close-modal:hover { color: var(--dark-hover); }
     <div class="content">
       <h2 class="text-3xl font-bold mb-3">Ai & Machine Learning</h2>
       <p class="mb-4 dark:text-[var(--dark-subtext)] text-[var(--light-subtext)]">
-        AI‑Powered Resume Analyzer, Generative Art Showcase, Smart Study Assistant
+        AI-Powered Resume Analyzer, Generative Art Showcase, Smart Study Assistant
       </p>
       <a href="#contact" class="btn-glow">Request Demo</a>
     </div>
@@ -1077,6 +1215,78 @@ html.dark #close-modal:hover { color: var(--dark-hover); }
       }
     }, 600);
   });
+
+
+  /* --------------------------
+     MOBILE OVERLAY MENU LOGIC
+     -------------------------- */
+
+  (function setupMobileOverlay() {
+    const hamburger = document.getElementById('hamburger');
+    const mobileOverlay = document.getElementById('mobileOverlay');
+    const mobileBackdrop = document.getElementById('mobileBackdrop');
+    const mobileClose = document.getElementById('mobileClose');
+
+    function openOverlay() {
+      if (!mobileOverlay) return;
+      mobileOverlay.style.display = 'flex';
+      mobileOverlay.setAttribute('aria-hidden', 'false');
+      // prevent body scroll while mobile menu is open
+      document.body.style.overflow = 'hidden';
+      // focus trap: focus first link
+      const firstLink = mobileOverlay.querySelector('a');
+      if (firstLink) firstLink.focus();
+    }
+
+    function closeOverlay() {
+      if (!mobileOverlay) return;
+      mobileOverlay.style.display = 'none';
+      mobileOverlay.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+      // restore focus to hamburger
+      if (hamburger) hamburger.focus();
+    }
+
+    // safe event binding
+    if (hamburger) {
+      hamburger.addEventListener('click', (e) => {
+        const isOpen = mobileOverlay && mobileOverlay.style.display === 'flex';
+        if (isOpen) closeOverlay(); else openOverlay();
+      });
+    }
+
+    if (mobileBackdrop) {
+      mobileBackdrop.addEventListener('click', () => closeOverlay());
+    }
+
+    if (mobileClose) {
+      mobileClose.addEventListener('click', () => closeOverlay());
+    }
+
+    // close overlay when any link inside is clicked (so navigation is quick)
+    const links = mobileOverlay ? mobileOverlay.querySelectorAll('a[href^="#"]') : [];
+    if (links && links.length) {
+      links.forEach(link => {
+        link.addEventListener('click', () => {
+          // allow scroll to target; then close overlay after a short delay
+          setTimeout(() => closeOverlay(), 320);
+        });
+      });
+    }
+
+    // close overlay on escape
+    window.addEventListener('keyup', (e) => {
+      if (e.key === 'Escape') closeOverlay();
+    });
+
+    // on resize to desktop size, ensure overlay closed
+    window.addEventListener('resize', () => {
+      if (window.innerWidth >= 768 && mobileOverlay && mobileOverlay.style.display === 'flex') {
+        closeOverlay();
+      }
+    });
+  })();
+
 </script>
 </body>
 </html>
