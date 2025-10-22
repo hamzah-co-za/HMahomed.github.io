@@ -546,6 +546,38 @@ html.dark .mobile-menu-panel a { color: var(--dark-text); }
     padding-right: 0.75rem; 
   }
 }
+
+.code-rain-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.code-rain {
+  position: absolute;
+  top: -100%;               /* start above container */
+  left: 50%;                /* center horizontally */
+  width: auto;
+  color: #58A6FF;
+  opacity: 0.8;
+  font-family: monospace;
+  font-size: 14px;
+  line-height: 1.2;
+  white-space: pre;
+  text-align: center;
+  transform: translateX(-54%); /* horizontal centering */
+  animation: codeRain 3s linear infinite;
+}
+
+@keyframes codeRain {
+  0% { top: -100%; }    /* start above */
+  100% { top: 100%; }   /* move fully past bottom of container */
+}
+
+
 </style>
 </head>
 
@@ -766,29 +798,29 @@ html.dark .mobile-menu-panel a { color: var(--dark-text); }
                         </div>
 
                         <!-- Immersive: centered code rain + shield -->
-                        <div class="asset-immersive anim-paused">
-                            <!-- Centered code rain -->
-                            <div style="position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
-                                        display:inline-block; text-align:center;
-                                        color:#58A6FF; opacity:.8; font-family:monospace; font-size:16px; line-height:1.2;
-                                        animation:codeRain 3s linear infinite; white-space:pre;">
-                                0101010100101010010101010010101010010101010010101010010101010<br/>
-                                1010101010110101010010101010110101010010101010110101010010101<br/>
-                                0101010010101010101010010101010101010010101010101010010101010<br/>
-                                1010101101010010101101010010101101010010101101010010101101010<br/>
-                                0101010100101010010101010010101010010101010010101010010101010<br/>
-                                1010101010110101010010101010110101010010101010110101010010101<br/>
-                                0101010010101010101010010101010101010010101010101010010101010<br/>
-                                0101101010010101101010010101101010010101101010010101101010101<br/>
-                            </div>
-                            <!-- Shield pulse -->
-                            <svg viewBox="0 0 240 240" width="240" height="240"
-                                 style="position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); z-index:1;">
-                                <path d="M120 30 L200 80 V140 C200 180 150 210 120 220 C90 210 40 180 40 140 V80 Z"
-                                      fill="none" stroke="#1F6FEB" stroke-width="3"
-                                      style="animation:shieldPulse 3s infinite"/>
-                            </svg>
-                        </div>
+<div class="asset-immersive anim-paused">
+  <!-- Fixed code rain container -->
+  <div class="code-rain-container">
+    <div class="code-rain">
+      0101010100101010010101010010101010010101010010101010010101010<br/>
+      1010101010110101010010101010110101010010101010110101010010101<br/>
+      0101010010101010101010010101010101010010101010101010010101010<br/>
+      1010101101010010101101010010101101010010101101010010101101010<br/>
+      0101010100101010010101010010101010010101010010101010010101010<br/>
+      1010101010110101010010101010110101010010101010110101010010101<br/>
+      0101010010101010101010010101010101010010101010101010010101010<br/>
+      0101101010010101101010010101101010010101101010010101101010101<br/>
+    </div>
+  </div>
+  <!-- Shield pulse -->
+  <svg viewBox="0 0 240 240" width="240" height="240"
+       style="position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); z-index:1;">
+    <path d="M120 30 L200 80 V140 C200 180 150 210 120 220 C90 210 40 180 40 140 V80 Z"
+          fill="none" stroke="#1F6FEB" stroke-width="3"
+          style="animation:shieldPulse 3s infinite"/>
+  </svg>
+</div>
+
 
                         <!-- Content -->
                         <div class="content">
@@ -1253,78 +1285,94 @@ html.dark .mobile-menu-panel a { color: var(--dark-text); }
         // GSAP animations - run on all devices for consistent experience
         gsap.registerPlugin(ScrollTrigger);
 
-        // Hero parallax
-        gsap.to("#orb1", { y: -30, x: 20, duration: 4, repeat: -1, yoyo: true, ease: "sine.inOut" });
-        gsap.to("#orb2", { y: 30, x: -20, duration: 5, repeat: -1, yoyo: true, ease: "sine.inOut" });
-        gsap.to("#orb3", { y: -20, x: 10, duration: 6, repeat: -1, yoyo: true, ease: "sine.inOut" });
+        // Fix for iOS ScrollTrigger initialization
+        function initAnimations() {
+            // Hero parallax
+            gsap.to("#orb1", { y: -30, x: 20, duration: 4, repeat: -1, yoyo: true, ease: "sine.inOut" });
+            gsap.to("#orb2", { y: 30, x: -20, duration: 5, repeat: -1, yoyo: true, ease: "sine.inOut" });
+            gsap.to("#orb3", { y: -20, x: 10, duration: 6, repeat: -1, yoyo: true, ease: "sine.inOut" });
 
-        // Intro reveal timeline (with scroll indicator fade-in last)
-        const introTl = gsap.timeline()
-            .from("nav", { y: -50, opacity: 0, duration: 0.6, ease: "power2.out" })
-            .from("#home h1", { y: 30, opacity: 0, duration: 0.7, ease: "power2.out" }, "-=0.2")
-            .from("#home p", { y: 20, opacity: 0, duration: 0.6, ease: "power2.out" }, "-=0.2")
-            .from("#home .magnetic", { scale: 0.9, opacity: 0, duration: 0.5, stagger: 0.1, ease: "back.out(1.4)" }, "-=0.2");
+            // Intro reveal timeline (with scroll indicator fade-in last)
+            const introTl = gsap.timeline()
+                .from("nav", { y: -50, opacity: 0, duration: 0.6, ease: "power2.out" })
+                .from("#home h1", { y: 30, opacity: 0, duration: 0.7, ease: "power2.out" }, "-=0.2")
+                .from("#home p", { y: 20, opacity: 0, duration: 0.6, ease: "power2.out" }, "-=0.2")
+                .from("#home .magnetic", { scale: 0.9, opacity: 0, duration: 0.5, stagger: 0.1, ease: "back.out(1.4)" }, "-=0.2");
 
-        // Scroll indicator fade in after intro (optional; if using fixed indicator you can skip)
-        if (document.getElementById('scroll-indicator')) {
-            introTl.to("#scroll-indicator", { autoAlpha: 1, duration: 0.6, ease: "power2.out" });
+            // Scroll indicator fade in after intro (optional; if using fixed indicator you can skip)
+            if (document.getElementById('scroll-indicator')) {
+                introTl.to("#scroll-indicator", { autoAlpha: 1, duration: 0.6, ease: "power2.out" });
+            }
+
+            // Expertise tiles (repeatable)
+            gsap.utils.toArray("#expertise .panel .card").forEach((card, i) => {
+                gsap.fromTo(card,
+                    { y: 60, opacity: 0, rotateY: (i % 2 === 0) ? -8 : 8 },
+                    {
+                        y: 0,
+                        opacity: 1,
+                        rotateY: 0,
+                        duration: 0.8,
+                        ease: "power3.out",
+                        delay: i * 0.08,
+                        scrollTrigger: {
+                            trigger: card,
+                            start: "top 85%",
+                            end: "bottom 15%",
+                            toggleActions: "play none none none", // Changed to only play once
+                            once: true // Ensure it only triggers once
+                        }
+                    }
+                );
+            });
+
+            // About section (repeatable)
+            gsap.from("#about img", {
+                scrollTrigger: { trigger: "#about", start: "top 70%", toggleActions: "play none none none", once: true },
+                opacity: 0,
+                scale: 0.7,
+                duration: 0.9,
+                ease: "back.out(1.5)"
+            });
+            gsap.from("#about h2", {
+                scrollTrigger: { trigger: "#about", start: "top 70%", toggleActions: "play none none none", once: true },
+                x: -30, opacity: 0, duration: 0.6, ease: "power2.out"
+            });
+            gsap.from("#about p", {
+                scrollTrigger: { trigger: "#about", start: "top 70%", toggleActions: "play none none none", once: true },
+                y: 20, opacity: 0, duration: 0.6, stagger: 0.15, ease: "power2.out"
+            });
+
+            // Contact section (repeatable)
+            gsap.from("#contact h2", {
+                scrollTrigger: { trigger: "#contact", start: "top 75%", toggleActions: "play none none none", once: true },
+                y: 20, opacity: 0, duration: 0.6, ease: "power2.out"
+            });
+            gsap.from("#contact p", {
+                scrollTrigger: { trigger: "#contact", start: "top 75%", toggleActions: "play none none none", once: true },
+                y: 20, opacity: 0, duration: 0.6, ease: "power2.out"
+            });
+            gsap.from("#contact .social-icon", {
+                scrollTrigger: { trigger: "#contact", start: "top 75%", toggleActions: "play none none none", once: true },
+                y: 20, opacity: 0, duration: 0.6, stagger: 0.1, ease: "power2.out"
+            });
+            gsap.from("#contact #open-contact", {
+                scrollTrigger: { trigger: "#contact", start: "top 75%", toggleActions: "play none none none", once: true },
+                scale: 0.95, opacity: 0, duration: 0.6, ease: "back.out(1.4)"
+            });
+
+            // Force ScrollTrigger refresh after a short delay to fix iOS issues
+            setTimeout(() => {
+                ScrollTrigger.refresh();
+            }, 500);
         }
 
-        // Expertise tiles (repeatable)
-        gsap.utils.toArray("#expertise .panel .card").forEach((card, i) => {
-            gsap.fromTo(card,
-                { y: 60, opacity: 0, rotateY: (i % 2 === 0) ? -8 : 8 },
-                {
-                    y: 0,
-                    opacity: 1,
-                    rotateY: 0,
-                    duration: 0.8,
-                    ease: "power3.out",
-                    delay: i * 0.08,
-                    scrollTrigger: {
-                        trigger: card,
-                        start: "top 85%",
-                        end: "bottom 15%",
-                        toggleActions: "play reverse play reverse"
-                    }
-                }
-            );
-        });
-
-        // About section (repeatable)
-        gsap.from("#about img", {
-            scrollTrigger: { trigger: "#about", start: "top 70%", toggleActions: "play reverse play reverse" },
-            opacity: 0,
-            scale: 0.7,
-            duration: 0.9,
-            ease: "back.out(1.5)"
-        });
-        gsap.from("#about h2", {
-            scrollTrigger: { trigger: "#about", start: "top 70%", toggleActions: "play reverse play reverse" },
-            x: -30, opacity: 0, duration: 0.6, ease: "power2.out"
-        });
-        gsap.from("#about p", {
-            scrollTrigger: { trigger: "#about", start: "top 70%", toggleActions: "play reverse play reverse" },
-            y: 20, opacity: 0, duration: 0.6, stagger: 0.15, ease: "power2.out"
-        });
-
-        // Contact section (repeatable)
-        gsap.from("#contact h2", {
-            scrollTrigger: { trigger: "#contact", start: "top 75%", toggleActions: "play reverse play reverse" },
-            y: 20, opacity: 0, duration: 0.6, ease: "power2.out"
-        });
-        gsap.from("#contact p", {
-            scrollTrigger: { trigger: "#contact", start: "top 75%", toggleActions: "play reverse play reverse" },
-            y: 20, opacity: 0, duration: 0.6, ease: "power2.out"
-        });
-        gsap.from("#contact .social-icon", {
-            scrollTrigger: { trigger: "#contact", start: "top 75%", toggleActions: "play reverse play reverse" },
-            y: 20, opacity: 0, duration: 0.6, stagger: 0.1, ease: "power2.out"
-        });
-        gsap.from("#contact #open-contact", {
-            scrollTrigger: { trigger: "#contact", start: "top 75%", toggleActions: "play reverse play reverse" },
-            scale: 0.95, opacity: 0, duration: 0.6, ease: "back.out(1.4)"
-        });
+        // Initialize animations after DOM is fully loaded
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initAnimations);
+        } else {
+            initAnimations();
+        }
 
         // Smooth scrolling for nav links with ScrollTrigger refresh
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
@@ -1368,6 +1416,15 @@ html.dark .mobile-menu-panel a { color: var(--dark-text); }
                     ScrollTrigger.refresh();
                 }
             }, 600);
+        });
+
+        // Additional iOS fix: refresh ScrollTrigger on touch events
+        document.addEventListener('touchstart', function() {
+            setTimeout(() => {
+                if (typeof ScrollTrigger !== 'undefined') {
+                    ScrollTrigger.refresh();
+                }
+            }, 100);
         });
 
         /* --------------------------
